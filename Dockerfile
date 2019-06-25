@@ -42,11 +42,11 @@ FROM ${TENSORFLOW_IMAGE} AS trtserver_tf
 COPY tools/patch/tensorflow /tmp/trtis/tools/patch/tensorflow
 RUN sha1sum -c /tmp/trtis/tools/patch/tensorflow/checksums && \
     patch -i /tmp/trtis/tools/patch/tensorflow/cc/saved_model/loader.cc \
-          /opt/tensorflow/tensorflow/cc/saved_model/loader.cc && \
+          /opt/tensorflow/tensorflow-source/tensorflow/cc/saved_model/loader.cc && \
     patch -i /tmp/trtis/tools/patch/tensorflow/BUILD \
-          /opt/tensorflow/tensorflow/BUILD && \
+          /opt/tensorflow/tensorflow-source/tensorflow/BUILD && \
     patch -i /tmp/trtis/tools/patch/tensorflow/tf_version_script.lds \
-          /opt/tensorflow/tensorflow/tf_version_script.lds && \
+          /opt/tensorflow/tensorflow-source/tensorflow/tf_version_script.lds && \
     patch -i /tmp/trtis/tools/patch/tensorflow/nvbuild.sh \
           /opt/tensorflow/nvbuild.sh && \
     patch -i /tmp/trtis/tools/patch/tensorflow/nvbuildopts \
@@ -59,7 +59,7 @@ RUN sha1sum -c /tmp/trtis/tools/patch/tensorflow/checksums && \
 # to build against the TensorFlow protobuf since it interfaces with
 # that code.
 COPY src/backends/tensorflow/tensorflow_backend_tf.* \
-     /opt/tensorflow/tensorflow/
+     /opt/tensorflow/tensorflow-source/tensorflow/
 
 # Build TensorFlow library for TRTIS
 WORKDIR /opt/tensorflow
@@ -332,7 +332,7 @@ WORKDIR /opt/tensorrtserver
 RUN rm -fr /opt/tensorrtserver/*
 COPY LICENSE .
 COPY --from=trtserver_onnx /workspace/onnxruntime/LICENSE LICENSE.onnxruntime
-COPY --from=trtserver_tf /opt/tensorflow/LICENSE LICENSE.tensorflow
+COPY --from=trtserver_tf /opt/tensorflow/tensorflow-source/LICENSE LICENSE.tensorflow
 COPY --from=trtserver_caffe2 /opt/pytorch/pytorch/LICENSE LICENSE.pytorch
 COPY --from=trtserver_build /opt/tensorrtserver/bin/trtserver bin/
 COPY --from=trtserver_build /opt/tensorrtserver/lib lib
