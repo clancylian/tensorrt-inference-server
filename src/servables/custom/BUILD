@@ -103,6 +103,7 @@ cc_test(
         "-L/usr/local/cuda/lib64/stubs",
         "-lnvidia-ml",
         "-lnvonnxparser_runtime",
+        "-lnvcaffe_parser",
     ],
     deps = [
         ":custom_bundle",

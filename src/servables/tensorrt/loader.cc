@@ -25,11 +25,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "src/servables/tensorrt/loader.h"
-
+#include "src/servables/tensorrt/myplugin.h"
 #include <NvOnnxParserRuntime.h>
 #include "src/servables/tensorrt/logging.h"
 
 namespace nvidia { namespace inferenceserver {
+
+AcrFacePluginFactory pluginFactory;
 
 Status
 LoadPlan(
@@ -41,8 +43,8 @@ LoadPlan(
 
   // Create plugin factory to provide onnx plugins. This should be
   // generalized based on what the model requires [DLIS-54]
-  nvonnxparser::IPluginFactory* onnx_plugin_factory =
-      nvonnxparser::createPluginFactory(tensorrt_logger);
+  //nvonnxparser::IPluginFactory* onnx_plugin_factory =
+  //    nvonnxparser::createPluginFactory(tensorrt_logger);
 
   *runtime = nvinfer1::createInferRuntime(tensorrt_logger);
   if (*runtime == nullptr) {
@@ -51,7 +53,7 @@ LoadPlan(
   }
 
   *engine = (*runtime)->deserializeCudaEngine(
-      &model_data[0], model_data.size(), onnx_plugin_factory);
+      &model_data[0], model_data.size(), &pluginFactory);
   if (*engine == nullptr) {
     return Status(
         RequestStatusCode::INTERNAL, "unable to create TensorRT engine");

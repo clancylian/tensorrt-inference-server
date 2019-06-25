@@ -57,6 +57,7 @@ cc_binary(
         "-pthread",
         "-L/usr/local/cuda/lib64/stubs",
         "-lnvidia-ml",
-        "-lnvonnxparser_runtime"
+        "-lnvonnxparser_runtime",
+        "-lnvcaffe_parser",
     ],
 )

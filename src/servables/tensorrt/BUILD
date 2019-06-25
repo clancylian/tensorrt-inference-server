@@ -29,6 +29,7 @@ package(
 )
 
 load("@protobuf_archive//:protobuf.bzl", "cc_proto_library")
+load("@local_config_cuda//cuda:build_defs.bzl", "cuda_default_copts")
 
 cc_proto_library(
     name = "plan_bundle_proto",
@@ -54,6 +55,7 @@ cc_library(
     hdrs = ["loader.h"],
     deps = [
         ":logging",
+        ":myplugin",
         "//src/core:status",
     ],
 )
@@ -64,6 +66,25 @@ cc_library(
     hdrs = ["logging.h"],
     deps = [
         "//src/core:logging",
+    ],
+)
+
+cc_library(
+    name = "myplugin",
+    srcs = ["myplugin.cc"],
+    hdrs = ["myplugin.h"],
+    deps = [
+        "//src/core:logging",
+        ":calcprelu",
+    ],
+)
+
+cc_library(
+    name = "calcprelu",
+    srcs = ["calcprelu.cu.cc"],
+    copts = cuda_default_copts(),
+    deps = [
+        "@local_config_cuda//cuda:cuda_headers",
     ],
 )
 
@@ -128,7 +149,8 @@ cc_test(
         "-lnvinfer",
         "-L/usr/local/cuda/lib64/stubs",
         "-lnvidia-ml",
-        "-lnvonnxparser_runtime"
+        "-lnvonnxparser_runtime",
+        "-lnvcaffe_parser",
     ],
     data = [
         ":tensorrt_testdata"
