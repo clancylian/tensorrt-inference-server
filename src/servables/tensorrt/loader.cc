@@ -31,8 +31,6 @@
 
 namespace nvidia { namespace inferenceserver {
 
-AcrFacePluginFactory pluginFactory;
-
 Status
 LoadPlan(
     const std::vector<char>& model_data, nvinfer1::IRuntime** runtime,
@@ -52,8 +50,13 @@ LoadPlan(
         RequestStatusCode::INTERNAL, "unable to create TensorRT runtime");
   }
 
+  AcrFacePluginFactory pluginFactory;
+
   *engine = (*runtime)->deserializeCudaEngine(
       &model_data[0], model_data.size(), &pluginFactory);
+
+  pluginFactory.destroyPlugin();
+  
   if (*engine == nullptr) {
     return Status(
         RequestStatusCode::INTERNAL, "unable to create TensorRT engine");
